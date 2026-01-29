@@ -1,2 +1,2 @@
-// api/index.js - Netlify Function Entry Point
-export { GET, POST } from '../src/frame.js';
+// api/index.js - Netlify Functions require CommonJS
+module.exports = require('../src/frame.js');
