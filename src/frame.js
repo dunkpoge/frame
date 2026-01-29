@@ -1,11 +1,11 @@
-// src/frame.js - Main Frog App (CommonJS for Netlify)
+// src/frame.js - Updated with string images
 const { Frog, Button } = require('frog');
 const { devtools } = require('frog/dev');
 const { serveStatic } = require('frog/serve-static');
 const { createPublicClient, http, parseEther } = require('viem');
 const { baseSepolia } = require('viem/chains');
 const { CONFIG, NFT_ABI } = require('./config.js');
-const { generateRandomSeed, generateTraits } = require('./nft-generator.js');
+const { generateRandomSeed, generateTraits, generateSVG } = require('./nft-generator.js');
 
 // Create Viem client
 const publicClient = createPublicClient({
@@ -36,6 +36,18 @@ const app = new Frog({
 });
 
 // Main frame route
+// src/frame.js - Updated with string images
+const { Frog, Button } = require('frog');
+const { devtools } = require('frog/dev');
+const { serveStatic } = require('frog/serve-static');
+const { createPublicClient, http, parseEther } = require('viem');
+const { baseSepolia } = require('viem/chains');
+const { CONFIG, NFT_ABI } = require('./config.js');
+const { generateRandomSeed, generateTraits, generateSVG } = require('./nft-generator.js');
+
+// ... rest of the imports and setup ...
+
+// Main frame route - UPDATED
 app.frame('/', async (c) => {
   const { buttonValue, deriveState } = c;
   
@@ -75,195 +87,13 @@ app.frame('/', async (c) => {
 
   const remaining = CONFIG.MAX_SUPPLY - Number(totalSupply);
   const traits = generateTraits(seed);
-  const totalPrice = (CONFIG.PRICE * quantity).toFixed(4);
+  
+  // Generate SVG string from your existing function
+  const svgString = generateSVG(traits, quantity, remaining, CONFIG.PRICE, CONFIG.MAX_SUPPLY);
+  const svgBase64 = Buffer.from(svgString).toString('base64');
 
   return c.res({
-    image: (
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '100%',
-          height: '100%',
-          backgroundColor: '#000',
-          color: 'white',
-          fontFamily: 'Press Start 2P',
-          padding: '40px'
-        }}
-      >
-        {/* Title */}
-        <div
-          style={{
-            fontSize: 48,
-            marginBottom: 30,
-            color: '#fff',
-            textAlign: 'center'
-          }}
-        >
-          DUNK POGE NFT
-        </div>
-
-        {/* NFT Preview */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 40,
-            marginBottom: 30
-          }}
-        >
-          {/* Face */}
-          <div
-            style={{
-              width: 200,
-              height: 200,
-              backgroundColor: traits.skinColor,
-              border: '8px solid #000',
-              position: 'relative',
-              borderRadius: '10px'
-            }}
-          >
-            {/* Hair */}
-            {traits.hasHair && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: -20,
-                  left: 0,
-                  width: '100%',
-                  height: 30,
-                  backgroundColor: traits.hairColor,
-                  border: '8px solid #000',
-                  borderBottom: 'none',
-                  borderTopLeftRadius: '10px',
-                  borderTopRightRadius: '10px'
-                }}
-              />
-            )}
-
-            {/* Eyes */}
-            <div
-              style={{
-                position: 'absolute',
-                top: 60,
-                left: 30,
-                width: 40,
-                height: 30,
-                backgroundColor: traits.eyeColor,
-                border: '4px solid #000',
-                borderRadius: '5px'
-              }}
-            />
-            <div
-              style={{
-                position: 'absolute',
-                top: 60,
-                right: 30,
-                width: 40,
-                height: 30,
-                backgroundColor: traits.eyeColor,
-                border: '4px solid #000',
-                borderRadius: '5px'
-              }}
-            />
-
-            {/* Mouth */}
-            <div
-              style={{
-                position: 'absolute',
-                bottom: 50,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: 80,
-                height: 15,
-                backgroundColor: traits.lipColor,
-                border: '4px solid #000',
-                borderRadius: '5px'
-              }}
-            />
-          </div>
-
-          {/* Info Panel */}
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 15,
-              fontSize: 16
-            }}
-          >
-            <div style={{ color: '#0f0' }}>┌─ TRAITS ─┐</div>
-            <div>Seed: #{seed}</div>
-            <div>Skin: ███</div>
-            <div>Eyes: ███</div>
-            <div>Hair: {traits.hasHair ? 'YES' : 'NO'}</div>
-            <div style={{ color: '#0f0' }}>└──────────┘</div>
-          </div>
-        </div>
-
-        {/* Quantity & Price */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 20,
-            marginBottom: 30
-          }}
-        >
-          <div
-            style={{
-              fontSize: 32,
-              backgroundColor: '#0f0',
-              color: '#000',
-              padding: '15px 40px',
-              border: '8px solid #000',
-              borderRadius: '10px'
-            }}
-          >
-            MINT ×{quantity}
-          </div>
-
-          <div
-            style={{
-              fontSize: 24,
-              backgroundColor: '#fff',
-              color: '#000',
-              padding: '10px 30px',
-              border: '6px solid #000',
-              borderRadius: '8px'
-            }}
-          >
-            {totalPrice} ETH
-          </div>
-        </div>
-
-        {/* Supply */}
-        <div
-          style={{
-            fontSize: 18,
-            marginBottom: 10,
-            color: '#0ff'
-          }}
-        >
-          {remaining} / {CONFIG.MAX_SUPPLY} REMAINING
-        </div>
-
-        {/* Footer */}
-        <div
-          style={{
-            fontSize: 12,
-            color: '#666',
-            marginTop: 10
-          }}
-        >
-          BASE SEPOLIA • ON-CHAIN
-        </div>
-      </div>
-    ),
+    image: `data:image/svg+xml;base64,${svgBase64}`,
     intents: [
       <Button value="new">🎲 New</Button>,
       quantity > 1 && <Button value="minus">➖</Button>,
