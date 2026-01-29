@@ -1,4 +1,4 @@
-// src/frame.js - Updated with string images
+// src/frame.js - Clean version
 const { Frog, Button } = require('frog');
 const { devtools } = require('frog/dev');
 const { serveStatic } = require('frog/serve-static');
@@ -36,18 +36,6 @@ const app = new Frog({
 });
 
 // Main frame route
-// src/frame.js - Updated with string images
-const { Frog, Button } = require('frog');
-const { devtools } = require('frog/dev');
-const { serveStatic } = require('frog/serve-static');
-const { createPublicClient, http, parseEther } = require('viem');
-const { baseSepolia } = require('viem/chains');
-const { CONFIG, NFT_ABI } = require('./config.js');
-const { generateRandomSeed, generateTraits, generateSVG } = require('./nft-generator.js');
-
-// ... rest of the imports and setup ...
-
-// Main frame route - UPDATED
 app.frame('/', async (c) => {
   const { buttonValue, deriveState } = c;
   
@@ -124,40 +112,33 @@ app.transaction('/mint', async (c) => {
   });
 });
 
-// Success frame
+// Success frame - ALSO NEEDS SVG STRING
 app.frame('/success', async (c) => {
   const { transactionId } = c;
   
+  // Create success SVG
+  const successSVG = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        .pixel { font-family: 'Press Start 2P', monospace; }
+      </style>
+      <rect width="800" height="800" fill="#00ff00"/>
+      <text x="400" y="200" text-anchor="middle" class="pixel" style="font-size: 64px;">✅</text>
+      <text x="400" y="300" text-anchor="middle" class="pixel" style="font-size: 36px;">MINT SUCCESS!</text>
+      <text x="400" y="400" text-anchor="middle" class="pixel" style="font-size: 20px;">
+        TX: ${transactionId?.slice(0, 10)}...
+      </text>
+      <text x="400" y="500" text-anchor="middle" class="pixel" style="font-size: 16px;">
+        SUCH DUNK • VERY POGE • WOW
+      </text>
+    </svg>
+  `;
+  
+  const successBase64 = Buffer.from(successSVG).toString('base64');
+
   return c.res({
-    image: (
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '100%',
-          height: '100%',
-          backgroundColor: '#0f0',
-          color: '#000',
-          fontFamily: 'Press Start 2P',
-          padding: '40px',
-          textAlign: 'center'
-        }}
-      >
-        <div style={{ fontSize: 80, marginBottom: 20 }}>✅</div>
-        <div style={{ fontSize: 40, marginBottom: 10 }}>MINT SUCCESS!</div>
-        <div style={{ fontSize: 20, marginBottom: 20, opacity: 0.8 }}>
-          TX: {transactionId?.slice(0, 12)}...
-        </div>
-        <div style={{ fontSize: 16, marginBottom: 30 }}>
-          SUCH DUNK • VERY POGE • WOW
-        </div>
-        <div style={{ fontSize: 14, opacity: 0.6 }}>
-          View on {CONFIG.CHAIN_INFO.name}
-        </div>
-      </div>
-    ),
+    image: `data:image/svg+xml;base64,${successBase64}`,
     intents: [
       <Button.Reset>🔄 New Mint</Button.Reset>,
       <Button.Link href={`${CONFIG.CHAIN_INFO.explorer}/tx/${transactionId}`}>
@@ -170,30 +151,26 @@ app.frame('/success', async (c) => {
   });
 });
 
-// Health check
+// Health check - ALSO NEEDS SVG STRING
 app.frame('/health', (c) => {
+  const healthSVG = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        .pixel { font-family: 'Press Start 2P', monospace; }
+      </style>
+      <rect width="800" height="800" fill="#000000"/>
+      <text x="400" y="300" text-anchor="middle" class="pixel" style="font-size: 48px; fill: white;">DUNK POGE</text>
+      <text x="400" y="400" text-anchor="middle" class="pixel" style="font-size: 32px; fill: #00ff00;">
+        ▶ FRAME ONLINE
+      </text>
+    </svg>
+  `;
+  
+  const healthBase64 = Buffer.from(healthSVG).toString('base64');
+
   return c.res({
-    image: (
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '100%',
-          height: '100%',
-          backgroundColor: '#000',
-          color: '#fff',
-          fontFamily: 'Press Start 2P',
-          fontSize: 48
-        }}
-      >
-        <div>DUNK POGE</div>
-        <div style={{ fontSize: 32, color: '#0f0', marginTop: 20 }}>
-          ▶ FRAME ONLINE
-        </div>
-      </div>
-    ),
+    image: `data:image/svg+xml;base64,${healthBase64}`,
     intents: [
       <Button.Link href="https://dunkpoge.com">Official Site</Button.Link>
     ]
