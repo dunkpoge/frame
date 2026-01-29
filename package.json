@@ -1,0 +1,19 @@
+{
+  "name": "dunk-poge-frame",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/frame.js",
+  "scripts": {
+    "dev": "node src/frame.js",
+    "start": "node src/frame.js",
+    "build": "echo 'No build required'"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.19.9",
+    "frog": "^0.18.3",
+    "viem": "^2.45.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
