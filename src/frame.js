@@ -1,10 +1,11 @@
-import { Frog, Button } from 'frog';
-import { devtools } from 'frog/dev';
-import { serveStatic } from 'frog/serve-static';
-import { createPublicClient, http, parseEther } from 'viem';
-import { baseSepolia } from 'viem/chains';
-import { CONFIG, NFT_ABI } from './config.js';
-import { generateRandomSeed, generateTraits } from './nft-generator.js';
+// src/frame.js - Main Frog App (CommonJS for Netlify)
+const { Frog, Button } = require('frog');
+const { devtools } = require('frog/dev');
+const { serveStatic } = require('frog/serve-static');
+const { createPublicClient, http, parseEther } = require('viem');
+const { baseSepolia } = require('viem/chains');
+const { CONFIG, NFT_ABI } = require('./config.js');
+const { generateRandomSeed, generateTraits } = require('./nft-generator.js');
 
 // Create Viem client
 const publicClient = createPublicClient({
@@ -13,7 +14,7 @@ const publicClient = createPublicClient({
 });
 
 // Initialize Frog
-export const app = new Frog({
+const app = new Frog({
   title: 'Dunk Poge',
   basePath: '/',
   browserLocation: 'https://dunkpoge.com',
@@ -369,13 +370,13 @@ app.frame('/health', (c) => {
   });
 });
 
-// Export for Netlify
-export const GET = app.fetch;
-export const POST = app.fetch;
+// Export for Netlify Functions
+module.exports.GET = app.fetch;
+module.exports.POST = app.fetch;
 
 // Local dev server
-if (import.meta.url === `file://${process.argv[1]}`) {
-  const { serve } = await import('@hono/node-server');
+if (require.main === module) {
+  const { serve } = require('@hono/node-server');
   serve({
     fetch: app.fetch,
     port: 3000
